@@ -1,5 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 #import sys
 #sys.path.append('../')
 #from mascarasXY import mascaras
@@ -70,15 +71,31 @@ def evolucion(t_max):
 it_30=30/dt
 it_60=60/dt
 
-plt.imshow(evolucion(int(it_30))[0], cmap="binary")
+
+f_anim=evolucion(int(it_60))[1]
+
+plt.imshow(evolucion(int(it_30))[0], cmap="gist_gray")
+plt.imshow(evolucion(30)[0], cmap="gist_gray")
 plt.title("Evolucion de la onda t=30s")
 plt.savefig("Onda_30.pdf")
 plt.close()
 
-plt.imshow(evolucion(int(it_60))[0], cmap="binary")
+plt.imshow(evolucion(int(it_60))[0], cmap="gist_gray")
+plt.imshow(evolucion(60)[0], cmap="gist_gray")
 plt.title("Evolucion de la onda t=60s")
 plt.savefig("Onda_60.pdf")
 plt.close()
 
+
 fig=plt.figure(figsize=(15,15))
+
+cubeta=plt.imshow(f_anim[0],cmap="flag")
+
+def init(i):
+	datos=f_anim[i]
+	cubeta.set_array(datos),
+
+anim=FuncAnimation(fig,init)
+plt.show()
+
 

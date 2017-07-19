@@ -1,9 +1,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-#import sys
-#sys.path.append('../')
-#from mascarasXY import mascaras
+
 
 #Solucionar la euacion de Onda en dos dimensiones 
 
@@ -17,13 +15,8 @@ b=30
 n=302
 
 x=np.linspace(a,b,n)
-
-
 r=0.5
-
 dx=x[1]-x[0]
-
-
 dt= r*dx
 
 u_inicial=np.zeros([n,n])
@@ -33,6 +26,9 @@ u_futuro=np.zeros([n,n])
 u_presente=np.zeros([n,n])
 u_pasado=np.zeros([n,n])
 m_tiempo=[]
+
+it_30=int(30/dt)
+it_60=int(60/dt)
 
 def evolucion(t_max):
 
@@ -60,40 +56,50 @@ def evolucion(t_max):
 			
 				u_futuro[i][j]= ((u_presente[i+1][j]-2*u_presente[i][j]+u_presente[i-1][j])*(r**2))+((r**2)*(u_presente[i][j+1]-2*u_presente[i][j]+u_presente[i][j-1]))+2*u_presente[i][j]-u_pasado[i][j]
 
-
+		
 		u_pasado=u_presente.copy()
 		u_presente=u_futuro.copy()*barrera
 		m_tiempo.append(u_presente)
+		
+#		if (k==int(it_30)):
+#			plt.imshow(u_presente, cmap="gist_gray")
+#			plt.title("Evolucion de la onda t=30s")
+#			plt.savefig("Onda_30.pdf")
+#			plt.close()
+#		if (k==(int(it_60)-1)):
+#			plt.imshow(u_presente, cmap="gist_gray")
+#			plt.title("Evolucion de la onda t=30s")
+#			plt.savefig("Onda_60.pdf")
+#			plt.close()
+
+	return m_tiempo
 
 
-	return u_presente, m_tiempo
-
-it_30=30/dt
-it_60=60/dt
 
 
-f_anim=evolucion(int(it_60))[1]
+f_anim=evolucion(it_60)
+t_30=f_anim[it_30]
+t_60=f_anim[it_60]
 
-plt.imshow(evolucion(int(it_30))[0], cmap="gist_gray")
-plt.imshow(evolucion(30)[0], cmap="gist_gray")
+plt.imshow(t_30, cmap="gist_gray")
 plt.title("Evolucion de la onda t=30s")
 plt.savefig("Onda_30.pdf")
 plt.close()
 
-plt.imshow(evolucion(int(it_60))[0], cmap="gist_gray")
-plt.imshow(evolucion(60)[0], cmap="gist_gray")
+plt.imshow(t_60, cmap="gist_gray")
 plt.title("Evolucion de la onda t=60s")
 plt.savefig("Onda_60.pdf")
 plt.close()
-
 
 fig=plt.figure(figsize=(15,15))
 
 cubeta=plt.imshow(f_anim[0],cmap="flag")
 
 def init(i):
+
 	datos=f_anim[i]
 	cubeta.set_array(datos),
+	return cubeta
 
 anim=FuncAnimation(fig,init)
 plt.show()

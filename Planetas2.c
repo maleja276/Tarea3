@@ -16,9 +16,6 @@ void aceleracion(int n, int i, int t, float *a_x, float *a_y, float *a_z, float 
 {
 	
 	float constante;
-	float dir_x;
-	float dir_y;
-	float dir_z;
 	int ind_j;
 	int ind_i;
 	int j;
@@ -27,7 +24,6 @@ void aceleracion(int n, int i, int t, float *a_x, float *a_y, float *a_z, float 
 	float b=*a_y;
 	float c=*a_z;
 	
-
  
 
 	for(j=0;j<10;j++){
@@ -41,18 +37,18 @@ void aceleracion(int n, int i, int t, float *a_x, float *a_y, float *a_z, float 
 
 		if(j!=i){
 
-			constante += (G * masa[j])/pow((pow(d[0],2.0)+pow(d[1],2.0)+pow(d[2],2.0)),(3.0/2.0));
+			constante = (G * masa[j])/pow((pow(d[0],2.0)+pow(d[1],2.0)+pow(d[2],2.0)),(3.0/2.0));
 			
-		a=(constante * d[0]);
-		b=(constante * d[1]);
-		c=(constante * d[2]);
+		a+=(constante * d[0]);
+		b+=(constante * d[1]);
+		c+=(constante * d[2]);
 		
-		*a_x=a;
-		*a_y=b;
-		*a_z=c;
 			}
 	}
-
+	
+	*a_x=a;
+	*a_y=b;
+	*a_z=c;
 	
 }
 
@@ -60,7 +56,7 @@ int main(void){
 
 	FILE *datos;
 	int i=0, j=0; 
-	int n=10;
+	int n=91250;
 	int fil=10, col=7;	
 	float matriz_datos[fil][col];
 	int let=250;
@@ -69,7 +65,7 @@ int main(void){
 	const char *delimiter;
 	int t;
 
-	float *masa=malloc(sizeof(float));
+	float *masa=malloc(10*sizeof(float));
 	float ax;
 	float ay;
 	float az;
@@ -82,6 +78,11 @@ int main(void){
 	float *v_y= malloc(n*fil*sizeof(float));
 	float *v_z= malloc(n*fil*sizeof(float));
 
+	float *vm_x= malloc(fil*sizeof(float));
+	float *vm_y= malloc(fil*sizeof(float));
+	float *vm_z= malloc(fil*sizeof(float));
+	
+	float dt=1.0/365;
 	
 	
 	delimiter=","; 
@@ -120,14 +121,31 @@ int main(void){
 		v_z[indices(i,0,n)]=matriz_datos[i][6];
 	}
 	
-	t=0;
-			for (i=0;i<10;i++){	
+	for (t=0; t<n; t++){
+			
+			for (i=0;i<10;i++){
+				ax, ay, az=0;	
 				aceleracion(n, i, t, &ax, &ay, &az, masa, p_x, p_y, p_z);
-			printf("%e\n", ax);
-	}
-	
 
-		
+				vm_x[i]=v_x[indices(i,t,n)]+0.5*ax*dt;
+				vm_y[i]=v_y[indices(i,t,n)]+0.5*ay*dt;
+				vm_z[i]=v_x[indices(i,t,n)]+0.5*az*dt;
+
+				p_x[indices(i,t+1,n)]= p_x[indices(i,t,n)] + vm_x[i]*dt;
+				p_y[indices(i,t+1,n)]= p_y[indices(i,t,n)] + vm_y[i]*dt;	
+				p_z[indices(i,t+1,n)]= p_z[indices(i,t,n)] + vm_z[i]*dt;
+				
+				ax, ay, az=0;
+				aceleracion(n, i,t+1,&ax, &ay, &az, masa, p_x, p_y, p_z);
+				v_x[indices(i,t+1,n)] = vm_x[i] + 0.5*ax *dt;	
+				v_y[indices(i,t+1,n)] = vm_y[i] + 0.5*ay *dt;
+				v_z[indices(i,t+1,n)] = vm_z[i] + 0.5*az *dt;
+				
+				printf("%e %e %e\n", p_x[indices(i,t,n)], p_y[indices(i,t,n)], p_z[indices(i,t,n)]);
+
+				}
+			
+	}	
 
 return 0;	
 }

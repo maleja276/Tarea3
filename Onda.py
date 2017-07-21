@@ -1,6 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
 
 
 #Solucionar la euacion de Onda en dos dimensiones 
@@ -33,8 +33,8 @@ it_60=int(60/dt)
 def evolucion(t_max):
 
 	barrera = np.ones((302,302))
-	barrera[200][0:140]=0
-	barrera[200][160:302]=0
+	barrera[200][0:130]=0
+	barrera[200][170:302]=0
 
 	for i in range (1,300):
 
@@ -60,17 +60,6 @@ def evolucion(t_max):
 		u_pasado=u_presente.copy()
 		u_presente=u_futuro.copy()*barrera
 		m_tiempo.append(u_presente)
-		
-#		if (k==int(it_30)):
-#			plt.imshow(u_presente, cmap="gist_gray")
-#			plt.title("Evolucion de la onda t=30s")
-#			plt.savefig("Onda_30.pdf")
-#			plt.close()
-#		if (k==(int(it_60)-1)):
-#			plt.imshow(u_presente, cmap="gist_gray")
-#			plt.title("Evolucion de la onda t=30s")
-#			plt.savefig("Onda_60.pdf")
-#			plt.close()
 
 	return m_tiempo
 
@@ -83,25 +72,37 @@ t_60=f_anim[it_60]
 
 plt.imshow(t_30, cmap="gist_gray")
 plt.title("Evolucion de la onda t=30s")
-plt.savefig("Onda_30.pdf")
+plt.savefig("Onda_30.png")
 plt.close()
 
 plt.imshow(t_60, cmap="gist_gray")
 plt.title("Evolucion de la onda t=60s")
-plt.savefig("Onda_60.pdf")
+plt.savefig("Onda_60.png")
 plt.close()
 
 fig=plt.figure(figsize=(15,15))
-
 cubeta=plt.imshow(f_anim[0],cmap="flag")
+
+
+nueva_lista=[]
+
+for i in range(len(f_anim)):
+
+	if (i%2==0):
+		nueva_lista.append(f_anim[i])
+
+		i+=1
+	else:	
+		i+=1
 
 def init(i):
 
-	datos=f_anim[i]
+	datos=nueva_lista[i]
 	cubeta.set_array(datos),
-	return cubeta
+	return cubeta,
 
-anim=FuncAnimation(fig,init)
-plt.show()
+ani=animation.FuncAnimation(fig,init, np.arange(0,len(nueva_lista)), interval=200)
+ani.save('Onda.mp4')
+
 
 

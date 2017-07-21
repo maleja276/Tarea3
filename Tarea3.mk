@@ -11,7 +11,7 @@ Orbitas.png : Plots_Planetas.py
 	python  Plots_Planetas.py
 
 Plots_Planetas.py : posiciones.txt Planetas.x
-	./Planetas.x > .txt 
+	./Planetas.x > posiciones.txt 
 
 Planetas.x : Planetas.c
 	cc  Planetas.c -o Planetas.x -lm
